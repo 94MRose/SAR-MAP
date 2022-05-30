@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<!-- Leaflet CSS -->
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+
+<!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+
+<!-- Add JQuery -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>  
+
+<link rel="stylesheet" href="CSS/storymap.css" />
+
+<!-- Dashflow script by ivan@sanchezortega.es https://gitlab.com/IvanSanchez/Leaflet.Path.DashFlow-->
+<script src='Scripts/L.Path.DashFlow.js'></script>
+
+<!-- Geometric Data -->
+<script src='Data/TheLandBetween.geojson'></script>
+<script src='Data/RibbonSnake.geojson'></script>
+<script src='Data/BedrockEra.geojson'></script>
+<script src='Data/Physiography.json'></script>
+<script src='Data/ChorusFrog.geojson'></script>
+<script src='Data/Massasauga.geojson'></script>
+<script src='Data/Milksnake.geojson'></script>
+<script src='Data/Skink.geojson'></script>
+<script src='Data/TLB_Watersheds.geojson'></script>
+<script src='Data/Townships.geojson'></script>
+
+<!-- Add Lightbox https://github.com/lokesh/lightbox2/releases  -->
+<link href="Scripts/Lightbox/dist/css/lightbox.min.css" rel="stylesheet" />
+<script src="Scripts/Lightbox/dist/js/lightbox.min.js"></script>
+
+</head>
+
+<body>
+  <div id="narration">
+    <!-- Data Selection -->
+    <div id = 'filter'>
+      <img src='Media/TLB-HorzWeb.png' style="background-color: white;">
+      <form>
+        <label for="species">Species: </label>
+        <select id="species" name="species">
+          <option value="ribbonSnake">Ribbon Snake</option>
+          <option value="chorusFrog">Chorus Frog</option>
+          <option value="massasauga">Massasauga</option>
+          <option value="milksnake">Milksnake</option>
+          <option value="skink">Skink</option>
+        </select>
+        <label for="minYear">Filter Earliest Records: </label>
+        <select id="minYear" name="minYear">
+          
+        </select>
+        <label for="maxYear">Filter Most Recent Records: </label>
+        <select id="maxYear" name="maxYear">
+          
+        </select>
+        <button type="button" onclick="UpdateMap()">Submit</button>
+      </form>
+    </div>
+
+    <script type="text/javascript">
+      var options = "";
+
+      for(i = 2021; i >= 1990; i--){
+        options += "<option>" + i + "</option>";
+      }
+
+      $('#minYear').append(options);
+      $('#maxYear').append(options);
+      let element = document.getElementById('minYear');
+      element.value = 2005;
+    </script>
+
+    <!-- <div class="contents">
+      <h1>Eastern Hog-nosed Snake (Heterodon platyrhinos)</h1>
+      <p><b>Conservation Status: </b> Threatened in Canada since 2003, Threatened in Ontario since 2008<br><br><b>Identification:</b><br>
+      • Thick-bodied snake, ~ 115 cm long (upper range)<br>
+      • Distinctive upturned snout<br>
+      • Dorsal colouration is highly variable ranging from light to dark with alternating dark blotches, to a patternless dorsal colour of olive or dark grey<br>
+      • Underside is considerably lighter <br>
+      • Large, dark blotch behind each eye<br>
+      • Flattens neck when threatened<br><br>
+      Within Canada, the Eastern Hog-nosed Snake occurs only in south-central Ontario and can be found in sandy soil environments like beaches, wooded areas, and meadows. They are active predators and highly mobile with a large home range. There is little known about how Eastern Hog-nosed Snakes hibernate, but they have been observed digging individual hibernacula when pre-existing burrows are not available. They lay their eggs in sandy soil beginning in June, and eggs hatch about two months later. The Eastern Hog-nosed Snake is harmless but puts on an elaborate display when threatened, often alarming humans. Along with a cobra-like display of flattening their neck, this snake will also play dead by rolling onto its back, emptying its bowels and releasing blood out of its mouth and cloaca.</p>
+    </div>
+
+    <div id=spacer></div> -->
+    <div class='contents' id='ribbonSnake'>
+      <h1>Eastern Ribbon Snake (Thamnophis sauritus)</h1>
+      <a href="Media/Ribbonsnake.jpg" data-lightbox="Ribbonsnake" data-title="Photo: Land Between Facebook"><img src="Media/Ribbonsnake.jpg"></a>
+      <a href="Media/Ribbonsnake2.jpg" data-lightbox="Ribbonsnake" data-title="Photo: Land Between Facebook"></a>
+      <a href="Media/Ribbonsnake3.jpg" data-lightbox="Ribbonsnake" data-title="Photo: Land Between Facebook"></a>
+      <h4>Status:</h4> <p>Threatened in Canada since 2005/Special Concern in Ontario since 2008<br><br></p>
+        <h4>Identification:</h4><p>
+    • Long, thin-bodied snake, ~ 85 cm long <br><br>
+    • Three yellow stripes running down the length of the body<br><br>
+    • Distinct head and neck<br><br>
+    • Differentiated from the Eastern Garter Snake by a crescent-shaped scale in front of each eye (this is not present in Eastern Garter Snakes)<br><br></p>
+    <h4>Diet:</h4><p>
+    Eastern Ribbonsnakes feed in the early morning and evening. They primarily eat amphibians, especially frogs, but will also eat small fish and various insects. <br><br></p>
+    <h4>Habitat and Biology:</h4><p>
+    Within Canada, the Eastern Ribbonsnake is found in southern Ontario, southern Quebec, and Nova Scotia. Eastern Ribbonsnakes are a semi-aquatic species and are found near year-round water sources with access to dry land. They  prefer wetlands and other shallow bodies of water. They are most active during the day and can be found basking on emergent logs, rocks, and shorelines often with other individuals. During the winter months, Eastern Ribbonsnakes hibernate underground individually or communally in animal burrows or rock crevices. Instead of laying eggs, the Eastern Ribbonsnake gives birth to live young in the late summer. <br><br></p>
+    <h4>Threats:</h4><p>
+    • Widespread loss of wetlands and shoreline degradation due to residential, commercial and agricultural development<br><br>
+    • Limited food availability due to declines in amphibian populations<br> <br>
+    • Road mortality<br><br>
+    • Introduction of predatory fish such as Large-mouth Bass that reduce prey availability <br><br></p>
+    <h4>Importance:</h4><p>
+    The Land Between is a last refuge for the Eastern Ribbonsnake in Ontario due to the alarming rate of development and habitat loss in southern Ontario. Amphibians, like frogs and toads, respond quickly to changes in their environment making them good indicators of ecosystem health. The presence of Eastern Ribbonsnakes on a property suggests that amphibian populations are stable and the resident ecosystem is healthy. This is extremely beneficial when monitoring water quality. Snakes also provide food for birds and other larger animals.<br><br></p>
+    <h4>How to Help:</h4><p>
+    • Identify and report sightings of the Eastern Ribbonsnake to The Land Between website and/or to iNaturalist (refer to the “Reporting” section at the beginning of this guide for more information).<br><br>
+    • Keep shorelines natural and preserve wetlands on your property <br><br>
+    • Limit the use of agricultural and horticultural pesticides on your property, especially near bodies of water<br><br>
+    • Learn how to create a snake hibernaculum. For instance, you can dig a pit with chambers at various depths, and fill it with concrete blocks and rocks.<br><br>
+    • Refer to the “General Snakes” page at the beginning of the section for more suggestions on how to help snakes like the Eastern Ribbonsnake<br><br></p>
+    <h4>Did you know?:</h4><p>
+    The Eastern Ribbonsnakes’ tail accounts for approximately one third of its body length!</p>
+    </div>
+
+    <div class="contents" id="massasauga" style="display:none">
+      <h1>Massasauga Rattlesnake (Sistrurus catenatus)</h1>
+      <a href="Media/Massasauga.jpg" data-lightbox="Massasauga" data-title="Photo: Scott D. Gillingwater"><img src="Media/Massasauga.jpg"></a>
+      <a href="Media/Massasauga2.jpg" data-lightbox="Massasauga" data-title="Photo: Scott D. Gillingwater"></a>
+      <a href="Media/Massasauga3.jpg" data-lightbox="Massasauga" data-title="Photo: Scott D. Gillingwater"></a>
+      <h4>Status:</h4> <p>Threatened in Canada since 2005/Threatened in Ontario since 2008<br><br></p>
+    <h4>Identification:</h4><p>
+    • Short, thick-bodied snake, ~ 76 cm long <br><br>
+    • Grey to brown body with dark, bowtie-shaped blotches on top alternating with smaller blotches along the side <br><br>
+    • Segmented rattle at the end of the tail<br><br>
+    • Triangular shaped head when viewed from above with a large, dark bar extending behind each eye <br><br>
+    • The only snake with vertical (cat-like) pupils in Ontario<br><br></p>
+    <h4>Diet:</h4><p>
+    Massasaugas are sit-and-wait predators; they use heat sensitive pits between the eye and nostril to detect warm-blooded prey, and use venom from their bite to immobilize the animal. Adult Massasaugas feed almost exclusively on small mammals while juveniles eat a wider variety of prey, including amphibians and invertebrates. <br><br></p>
+    <h4>Habitat and Biology:</h4><p>
+    The Canadian range of the Massasauga lies entirely within Ontario; in the Georgian Bay region and the Carolinian region. Massasaugas are habitat generalists but have very specific microhabitat requirements. They can be found in prairies, wetlands, forest edges and rock barrens habitats though they are typically found in close proximity to bodies of water. They also require a semi-open habitat to provide cover from predators as well as basking opportunities. Massasaugas are the only venomous snakes in Ontario and are very shy. When threatened, Massasaugas retreat if possible or rattle their tail as a warning. They will only try to bite as a last resort. Massasaugas hibernate individually or communally underground and require structurally sound crevices such as rock outcrops, old root systems, and animal burrows. Females give birth to live young every other year in the late summer. <br><br></p>
+    <h4>Threats:</h4><p>
+    • Loss of suitable habitat and destruction of microhabitat due to commercial and residential development <br><br>
+    • Illegal persecution - Massasaugas pose little threat to public safety, but are often killed out of fear<br><br>
+    • Road mortality <br><br>
+    • Illegal collection for the pet trade<br><br></p>
+    <h4>Importance:</h4><p>
+    Massasaugas have already been lost from most of their historic range and are unique as the only vipers in Ontario. They pose little threat to public safety and are rarely encountered. Massasaugas can be useful as a natural pest control in areas where small rodent populations are abundant and may carry diseases and parasites. As with all snakes, Massasauga Rattlesnakes help keep an integral balance in the ecosystem.<br><br></p>
+    <h4>How to Help:</h4><p>
+    • Identify and report sightings of the Massasauga to The Land Between website and/or to iNaturalist (refer to the “Reporting” section at the beginning of this guide for more information)<br><br>
+    • Maintain a wide buffer of native plants along shorelines and preserve wetlands on your property <br><br>
+    • Spread the word! Tell your kids, friends, and family that Massasauga Rattlesnakes pose little threat and shouldn’t be disturbed<br><br>
+    • Refer to the “General Snakes” page at the beginning of the section for more suggestions on how to help snakes like the Massasauga Rattlesnake<br><br></p>
+    <h4>Did you know?</h4><p>
+    No one has died from a Massasauga rattlesnake bite in Ontario in more than 50 years! Only two deaths resulting from a Massasauga bite have ever been reported in Ontario.</p>
+  </div>
+
+  <div class='contents' id='skink' style="display:none">
+    <h1>Five-lined Skink (Plestiodon fasciatus)</h1>
+    <a href="Media/Skink.jpg" data-lightbox="Skink" data-title="Photo: The Land Between Facebook"><img src="Media/Skink.jpg"></a>
+    <a href="Media/Skink2.jpg" data-lightbox="Skink" data-title="Photo: The Land Between Facebook"></a>
+    <a href="Media/Skink3.jpg" data-lightbox="Skink" data-title="Photo: The Land Between Facebook"></a>
+    <h4>Status:</h4> <p>Special Concern in Canada since 2009/ Special Concern in Ontario since 2009<br><br></p>
+    <h4>Identification</h4><p>
+    • Small lizard, ~ 8.6 cm long from vent to snout<br><br>
+    • Black body with five cream-coloured lines running lengthwise<br><br>
+    • Juveniles have a bright blue tail that fades to brown with age<br><br>
+    • Males have orange jaws during breeding season<br><br>
+    • Only lizard native to Ontario<br><br></p>
+    <h4>Diet:</h4><p>
+    Five-lined Skinks are active foragers and typically hunt in plant litter or climb trees to catch prey. Their primary food source is a variety of invertebrates such as crickets, worms and spiders. <br><br></p>
+    <h4>Habitat and Biology:</h4><p>
+    In Canada, the Five-lined Skink occurs only in Ontario on the southern Canadian Shield and in southwestern Ontario. Five-lined Skinks prefer habitat with a relatively open canopy, rocky outcrops, and new plant growth. They spend the majority of their time under the cover of rocks and logs, but can be seen basking on cooler mornings. They move quickly and when threatened will flee or “drop” their tails as a way to escape predators, leaving their tail behind. Five-lined Skinks have no defined home range and are not territorial. They hibernate communally under rocks and decaying wood, and sometimes even nest communally. Females lay their eggs under rocks or debris in early summer and sit with their nest to defend it from predators. <br><br></p>
+    <h4>Threats:</h4><p>
+    • Loss of suitable habitat and destruction of microhabitat due to residential development and recreational activities<br><br>
+    • Road mortality<br><br>
+    • Illegal collection for the pet trade<br><br>
+    • Increased number of predators including cats and dogs<br><br>
+    <h4>Importance:</h4><p>
+    The Five-lined Skink is eastern Canada’s only lizard species and approximately 90% of the population is found in the Land Between region. Individual and group efforts made here can have a large impact on the overall population. <br><br></p>
+    <h4>How to Help:</h4><p>
+    • Identify and report sightings of the Five-lined Skink to The Land Between website and/or to iNaturalist (refer to the “Reporting” section at the beginning of this guide for more information)<br><br>
+    • Leave open rock habitat as natural as possible and avoid moving rocks and other objects that could provide cover<br><br>
+    • Do not let pets off leash on trails and monitor them closely <br><br>
+    • Refer to the “Snakes Overview” page at the beginning of the section for more suggestions on how to help  the Five-lined Skink and related species<br><br></p>
+    <h4>Did you know?</h4><p>
+    Females will bask in the sun to raise their body temperature then return to their nest to warm the eggs. </p>
+  </div>
+
+  <div class="contents" id="chorusFrog" style="display:none">
+    <h1>Western Chorus Frog (Pseudacris triseriata)</h1>
+    <a href="Media/Chorus.jpg" data-lightbox="Chorus" data-title="Photo: The Land Between Facebook"><img src="Media/Chorus.jpg"></a>
+    <a href="Media/Chorus2.jpg" data-lightbox="Chorus" data-title="Photo: The Land Between Facebook"></a>
+    <h4>Status:</h4> <p>Threatened in Canada since 2010/ Not Listed in Ontario<br><br></p>
+    <h4>Species Identification:</h4><p>
+    • Small tree frog, ~ 2.5 cm long from vent to snout<br><br>
+    • Olive-grey to brown with three dark dorsal stripes sometimes broken into blotches<br><br>
+    • Dark line from snout to groin and white line on upper lip<br><br>
+    • Call sounds like running a finger across the teeth of a comb <br><br>
+    • Distinguishable from Boreal Chorus Frog by call and separate range<br><br></p>
+    <h4>Diet:</h4><p>
+    Western Chorus Frogs consume a variety of small, terrestrial invertebrates such as beetles, mites, spiders, and slugs. They are not good climbers and feed on the ground or in low vegetation from dusk to dawn.<br><br></p>
+    <h4>Habitat and Biology:</h4><p>
+    In Canada, the Western Chorus Frog occurs only in southern Ontario and southwestern Quebec (the Boreal Chorus Frog occurs in northern Ontario and the central provinces). Western Chorus Frogs are poor swimmers and only spend about 20 days of the breeding season in aquatic habitats. They are one of the first frogs to call in the spring, sometimes as early as March, and can start breeding before the water is free of ice. Western Chorus Frogs lay their eggs in shallow, often temporary water bodies such as flooded fields, ditches, and swamps to avoid aquatic predators. Terrestrial habitat is often selected based on proximity to breeding ponds, but grassy or wooded areas near water, or damp, open habitats are preferred. Western Chorus Frogs are freeze-tolerant and hibernate under rocks, logs, leaf litter, and loose soil.<br><br></p>
+    <h4>Threats:</h4><p>
+    • Habitat loss due to commercial and agricultural development. Land drained for construction or agricultural purposes eliminates temporary breeding ponds<br><br>
+    • Road mortality<br><br>
+    • Pollution - Amphibians have permeable skin that easily absorbs chemicals into their bodies<br><br></p>
+    <h4>Importance:</h4><p>
+    Amphibians, such as frogs and toads, respond quickly to changes in their environment making them good indicators of ecosystem health. Hearing Western Chorus Frogs call in the spring is an indication of a healthy habitat. Chorus Frogs also help to control populations of mosquitoes and flies which can be pesky for humans.<br><br></p>
+    <h4>How to Help:</h4><p>
+    • Identify and report sightings of the Western Chorus frog to The Land Between website and/or to iNaturalist (refer to the “Reporting” section at the beginning of this guide for more information)<br><br>
+    • Leave areas with seasonal flooding as natural as possible <br><br>
+    • Limit the use of agricultural and horticultural pesticides on your property <br><br></p>
+    <h4>Did you know?</h4> <p>
+    Western Chorus Frogs rarely live longer than one year, but some individuals have been known to live up to three years.</p>
+  </div>
+
+  <div class="contents" id="milksnake" style="display:none">
+    <h1>Eastern Milksnake (Lampropeltis Triangulum)</h1>
+    <a href="Media/Milksnake.jpg" data-lightbox="Milksnake" data-title="Photo: Scott D. Gillingwater"><img src="Media/Milksnake.jpg"></a>
+    <a href="Media/Milksnake2.jpg" data-lightbox="Milksnake" data-title="Photo: Scott D. Gillingwater"></a>
+    <a href="Media/Milksnake3.jpg" data-lightbox="Milksnake" data-title="Photo: Scott D. Gillingwater"></a>
+    <a href="Media/Milksnake4.jpg" data-lightbox="Milksnake" data-title="Photo: Grace Wiley"></a>
+    <h4>Status:</h4> <p>Special Concern in Canada since 2005/ Not at Risk in Ontario since 2016<br><br></p>
+    <h4>Identification:</h4><p>
+    • Long, thin bodied snake, ~ 90 cm long<br><br>
+    • Grey to brown body with large, red-brown blotches outlined in black on top, alternating with smaller blotches along the side<br><br>
+    • Black and white checkered underside<br><br>
+    • Y or V-shaped pattern on top of the head <br><br>
+    • Distinguishable from Massasauga Rattlesnake by rounded head when viewed from above (Massasauga Rattlesnake has a triangular head)<br><br></p>
+    <h4>Diet:</h4><p>
+    Eastern Milksnakes are constrictors which means that they coil around their prey until the animal suffocates, then consume it whole. Eastern Milksnakes hunt at night feeding primarily on small mammals, but will also eat amphibians, worms, smaller snakes, and eggs. <br><br></p>
+    <h4>Habitat and Biology:</h4><p>
+    The Canadian range of the Eastern Milksnake extends from southern Ontario up to around Sault Ste Marie, and across to southwestern Quebec. Eastern Milksnakes can be successful in a variety of both natural and human-influenced habitats preferring open landscapes such as forest edges, rocky outcrops and fields. They are often found around buildings that have an abundance of rodents, such as barns and sheds, where they can enter the foundation in search of food or shelter. Eastern Milksnakes will also hibernate in building foundations, basements, or underground to avoid freezing temperatures. Females lay their eggs from May to July in a variety of substrates including rotting logs, leaf mounds, mammal burrows, and under boards. When threatened, the Eastern Milksnake mimics a rattlesnake by vibrating its tail against vegetation in an attempt to deter predators. <br><br></p>
+    <h4>Threats:</h4><p>
+    • Loss of habitat due to residential and commercial development and the modernization of old buildings<br><br>
+    • Illegal persecution - Eastern Milksnakes are often mistaken for the Massasauga Rattlesnake, and are killed out of fear <br><br>
+    • Road mortality <br><br>
+    • Farming equipment and domestic cats <br><br></p>
+    <h4>Importance:</h4><p>
+    Eastern Milksnakes can be useful as a natural pest control where small rodent populations are abundant and may carry diseases and parasites. They can also be an important food source for birds and other animals. As with all snakes, Eastern Milksnakes help keep an integral balance in the ecosystem.  <br><br><p>
+    <h4>How to Help:</h4><p>
+    • Identify and report sightings of the Eastern Milksnake to The Land Between website and/or to iNaturalist (refer to the “Reporting” section at the beginning of this guide for more information)<br><br>
+    • Maintain or create brush piles and leave decaying wood on your property<br><br>
+    • Avoid moving rocks or anything that could provide cover <br><br>
+    • Consider leaving old buildings that are being used by wildlife<br><br>
+    • Refer to the “General Snakes” page at the beginning of the section for more suggestions on how to help snakes like the Eastern Milksnake<br><br></p>
+    <h4>Did you know?</h4><p>
+    The name of this species is derived from the belief that it takes milk from cows in barns. Milksnakes do not drink milk and are attracted to barns because mice are their primary prey.</p>
+  </div>
+
+  <div id="map"></div>
+
+  <script>
+    // Setup Map
+var map = L.map('map',
+      {maxZoom:15,minZoom:3});
+
+map.createPane('boundaryPane');
+map.getPane('boundaryPane').style.zIndex = 401;
+var boundaryLayer = new L.GeoJSON(TLB, {
+  pane: 'boundaryPane',
+  interactive: false,
+  dashArray: "15 15",
+  dashSpeed: 30,
+  color: "#000000",
+  fillOpacity: .1,
+  opacity: .5
+}).addTo(map);
+
+map.createPane('speciesPane');
+map.getPane('speciesPane').style.zIndex = 400;
+
+L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: ['a','b','c']
+}).addTo( map );
+
+map.setView([44.7389, -78.3922], 8);
+
+// geoLayer.addData(ribbonSnake);
+// geoLayer.addTo(map);
+var attribution = "";
+var minYear = 2005;
+var maxYear = 2021;
+var squares = [];
+var selected = [];
+var filteredLayer = new L.GeoJSON(null, {
+  interactive: true,
+  pane: 'speciesPane',
+  color: "chartreuse",
+  fillOpacity: .5,
+  opacity: .5
+});
+
+console.log("Before sorting");
+console.log(ribbonSnake.features[0].properties.year);
+console.log(ribbonSnake.features[1].properties.year);
+console.log(ribbonSnake.features[2].properties.year);
+
+ribbonSnake.features.sort(function (a, b) {
+    if (a.properties.year > b.properties.year)
+        return -1;
+    else if (a.properties.year < b.properties.year)
+        return 1;
+});
+
+console.log("After sorting");
+console.log(ribbonSnake.features[0].properties.year);
+console.log(ribbonSnake.features[1].properties.year);
+console.log(ribbonSnake.features[2].properties.year);
+
+//setup overlay layers
+var bedrockLayer = new L.GeoJSON(bedrock, {
+  interactive: true,
+  color: "#000000",
+  fillOpacity: .5,
+  opacity: .5,
+  attribution: "Bedrock: <a href='https://www.geologyontario.mndm.gov.on.ca/mndmaccess/mndm_dir.asp?type=pub&id=MRD126-REV1'>Geology Ontario</a>"
+});
+
+var physiographyLayer = new L.GeoJSON(physiography, {
+  interactive: true,
+  color: "#000000",
+  fillOpacity: .5,
+  opacity: .5,
+  attribution: "Physiography: <a href='https://www.geologyontario.mndm.gov.on.ca/mndmaccess/mndm_dir.asp?type=pub&id=MRD228'>Geology Ontario</a>"
+});
+
+var watershedLayer = new L.GeoJSON(watersheds, {
+  interactive: true,
+  color: "#000000",
+  fillOpacity: .5,
+  opacity: .5,
+  attribution: "Tertiary Watershed Boudaries: <a href='https://geohub.lio.gov.on.ca/maps/mnrf::ontario-watershed-boundaries-owb/about'>MNRF</a>"
+});
+
+var townshipLayer = new L.GeoJSON(townships, {
+  interactive: true,
+  color: "#000000",
+  fillOpacity: .5,
+  opacity: .5
+});
+
+
+bedrockLayer.eachLayer(styleLayer);
+physiographyLayer.eachLayer(styleLayer);
+watershedLayer.eachLayer(styleLayer);
+townshipLayer.eachLayer(styleLayer);
+
+function styleLayer(layer){
+  fillColor = layer.feature.properties.fillColor;
+  layer.bindPopup(layer.feature.properties.desc);
+
+  layer.setStyle
+  ({
+    fillColor: fillColor,
+    color:'#000000',
+    weight:0.25
+  });
+}
+
+var speciesLayer = new L.GeoJSON(ribbonSnake, {
+  interactive: true,
+  color: "chartreuse",
+  fillOpacity: .5,
+  opacity: .5,
+  // filter: function(feature, layer) {
+  //               return feature.properties.year == "2021";
+  //           }
+  onEachFeature: onEachFeature
+  // filter: FilterJSON
+});//.addTo(map);
+map.attributionControl.removeAttribution(attribution);
+attribution = "Ribbon Snake";
+map.attributionControl.addAttribution(attribution);
+
+filteredLayer.eachLayer(function (layer){layer.bindPopup("Most Recent Year: " + layer.feature.properties.year) });
+filteredLayer.addTo(map);
+
+
+console.log(selected);
+
+
+  // function FilterJSON(json){
+  //   var att = json.properties;
+  //   return (att.year == "2021");
+
+  // }
+  function onEachFeature(feature, layer){
+    var att = feature.properties;
+    if(att.year <= maxYear && att.year >= minYear){
+      if(!squares.includes(att.OBBA_SQUAR)){
+        squares.push(att.OBBA_SQUAR);
+        selected.push(att.ID);
+        // layer.bindPopup(att.ID);
+        filteredLayer.addData(feature);
+      }
+    };
+    // console.log(counter);
+  }
+
+  function FilterJSON(json){
+    var att = json.properties;
+    // var squares = [];
+    // var selected = [];
+    //   if(att.year == "2021"){
+    //   if(!squares.includes(att.SQUARE_NO)){
+    //     squares.push(att.SQUARE_NO);
+    //     selected.push(att.ID);
+    //   }
+    // };
+  
+    
+    return selected.includes(att.ID);
+    // console.log(selected);
+
+  };
+
+  function UpdateMap(){
+    var species = document.getElementById("species").value;
+    minYear = document.getElementById("minYear").value;
+    maxYear = document.getElementById("maxYear").value;
+    filteredLayer.clearLayers();
+    speciesLayer.clearLayers();
+    squares = [];
+    selected = [];
+    $(".contents").hide();
+
+    map.removeLayer(speciesLayer);
+
+    switch(species){
+      case "ribbonSnake":
+        map.attributionControl.removeAttribution(attribution);
+        attribution = "Species Observations: <a href='https://doi.org/10.15468/dl.hthmgh'>GBIF.org (28 June 2021) GBIF Occurrence Download</a>";
+        map.attributionControl.addAttribution(attribution);
+        speciesLayer = new L.GeoJSON(ribbonSnake, {
+        interactive: true,
+        color: "chartreuse",
+        fillOpacity: .5,
+        opacity: .5,
+        onEachFeature: onEachFeature
+        });
+        $("#ribbonSnake").show();
+        break;
+
+      case "chorusFrog":
+        map.attributionControl.removeAttribution(attribution);
+        attribution = "Species Observations: <a href='https://doi.org/10.15468/dl.pegw2y'>GBIF.org (24 September 2021) GBIF Occurrence Download</a>";
+        map.attributionControl.addAttribution(attribution);
+        speciesLayer = new L.GeoJSON(chorusFrog, {
+        interactive: true,
+        color: "chartreuse",
+        fillOpacity: .5,
+        opacity: .5,
+        onEachFeature: onEachFeature,
+        attribution: "Chorus Frog"
+        });
+        $("#chorusFrog").show();
+        break;
+
+      case "massasauga":
+        map.attributionControl.removeAttribution(attribution);
+        attribution = "Species Observations: <a href='https://doi.org/10.15468/dl.9whyg3'>GBIF.org (24 September 2021) GBIF Occurrence Download</a>";
+        map.attributionControl.addAttribution(attribution);
+        speciesLayer = new L.GeoJSON(massasauga, {
+        interactive: true,
+        color: "chartreuse",
+        fillOpacity: .5,
+        opacity: .5,
+        onEachFeature: onEachFeature
+        });
+        $("#massasauga").show();
+        break;
+
+      case "milksnake":
+        map.attributionControl.removeAttribution(attribution);
+        attribution = "Species Observations: <a href='https://doi.org/10.15468/dl.u58tyt'>GBIF.org (24 September 2021) GBIF Occurrence Download</a>";
+        map.attributionControl.addAttribution(attribution);
+        speciesLayer = new L.GeoJSON(milksnake, {
+        interactive: true,
+        color: "chartreuse",
+        fillOpacity: .5,
+        opacity: .5,
+        onEachFeature: onEachFeature
+        });
+        $("#milksnake").show();
+        break;
+
+      case "skink":
+        map.attributionControl.removeAttribution(attribution);
+        attribution = "Species Observations: <a href='https://doi.org/10.15468/dl.jvtqks'>GBIF.org (24 September 2021) GBIF Occurrence Download</a>";
+        map.attributionControl.addAttribution(attribution);
+        speciesLayer = new L.GeoJSON(skink, {
+        interactive: true,
+        color: "chartreuse",
+        fillOpacity: .5,
+        opacity: .5,
+        onEachFeature: onEachFeature
+        });
+        $("#skink").show();
+        break;
+    }
+    // Test Ribbonsnake data, working
+    // speciesLayer = new L.GeoJSON(ribbonSnake, {
+    //   interactive: true,
+    //   color: "chartreuse",
+    //   fillOpacity: .5,
+    //   opacity: .5,
+    //   onEachFeature: onEachFeature
+    // });
+
+    filteredLayer.eachLayer(function (layer){layer.bindPopup("Most Recent Year: " + layer.feature.properties.year) });
+    filteredLayer.addTo(map);
+
+    console.log("Map Updated");
+  }
+
+  var overlayMaps = {
+    "Bedrock": bedrockLayer,
+    "Physiography": physiographyLayer,
+    "Watersheds": watershedLayer,
+    "Townships": townshipLayer
+  };
+
+  L.control.layers(null, overlayMaps).addTo(map);
+
+  </script>
+
+</body>
+</html>
